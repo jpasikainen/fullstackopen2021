@@ -1,0 +1,12 @@
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+selain-->palvelin: {content: "wasdasdsasads", date: "2019-07-02T15:37:57.693Z"}
+note over selain:
+selain lähettää palvelimelle pyynnön 
+end note
+palvelin-->selain: {"message":"note created"}
+note over palvelin:
+palvelin ilmoittaa vastaanottaneensa kyselyn 
+end note
+note over selain:
+selain renderöi tarvittavat osat uudelleen
+note over
