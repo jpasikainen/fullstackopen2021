@@ -1,36 +1,31 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect } from "react";
+import restAPI from "./RestAPI";
 
-import Filter from './Filter'
-import PersonForm from './PersonForm'
-import Persons from './Persons'
+import Filter from "./Filter";
+import PersonForm from "./PersonForm";
+import Persons from "./Persons";
 
 const App = () => {
-  const [ persons, setPersons] = useState([]) 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ filter, setFilter ] = useState('')
+  const [filter, setFilter] = useState("");
+  const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-    })
-  }, [])
+    restAPI
+      .getAll()
+      .then((persons) => setPersons(persons))
+      .catch((error) => alert(error));
+  }, []);
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter filter={filter} setFilter={setFilter}/>
-      <h2>add a new</h2>
-      <PersonForm persons={persons} setPersons={setPersons} newNumber={newNumber} newName={newName} setNewNumber={setNewNumber} setNewName={setNewName}/>
+      <Filter filter={filter} setFilter={setFilter} />
+      <h2>add a new number</h2>
+      <PersonForm persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} setPersons={setPersons} filter={filter} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
