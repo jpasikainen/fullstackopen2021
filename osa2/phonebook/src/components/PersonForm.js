@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import restAPI from "./RestAPI";
 
-const PersonForm = ({ persons, setPersons }) => {
+const PersonForm = ({ persons, setPersons, setNotification }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
   const addNumber = (event) => {
     event.preventDefault();
+
+    if (newName === "" || newNumber === "") return;
 
     const newPerson = {
       name: newName,
@@ -16,16 +18,29 @@ const PersonForm = ({ persons, setPersons }) => {
     if (persons.filter((person) => person.name === newName).length > 0) {
       if (window.confirm(`replace ${newName} ?`)) {
         const id = persons.find((person) => person.name === newName).id;
-        restAPI.update(id, newPerson).catch((error) => alert(error));
+        restAPI
+          .update(id, newPerson)
+          .catch((error) => setNotification({ message: error, error: true }));
+        setNotification({
+          message: `Updated ${newName}'s number`,
+          error: false,
+        });
       }
     } else {
-      restAPI.create(newPerson).catch((error) => alert(error));
+      restAPI
+        .create(newPerson)
+        .catch((error) => setNotification({ message: error, error: true }));
+      setNotification({ message: `Created ${newName}`, error: false });
     }
+
+    setTimeout(() => {
+      setNotification({ message: null, error: false });
+    }, 5000);
 
     restAPI
       .getAll()
       .then((persons) => setPersons(persons))
-      .catch((error) => alert(error));
+      .catch((error) => setNotification({ message: error, error: true }));
 
     setNewName("");
     setNewNumber("");

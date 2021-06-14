@@ -1,17 +1,22 @@
 import React from "react";
 import restAPI from "./RestAPI";
 
-const Persons = ({ persons, setPersons, filter }) => {
+const Persons = ({ persons, setPersons, filter, setNotification }) => {
   const deleteNumber = (person) => {
     if (window.confirm(`delete ${person.name} ?`)) {
+      setNotification({ message: `Deleted ${person.name}`, error: false });
+      setTimeout(() => {
+        setNotification({ message: null, error: false });
+      }, 5000);
+
       restAPI
         .deleteEntry(person)
         .then((res) => console.log(res))
-        .catch((error) => alert(error));
+        .catch((error) => setNotification({ message: error, error: true }));
       restAPI
         .getAll()
         .then((persons) => setPersons(persons))
-        .catch((error) => alert(error));
+        .catch((error) => setNotification({ message: error, error: true }));
     }
   };
 
