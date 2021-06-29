@@ -3,20 +3,23 @@ import Blog from './components/Blog';
 import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import BlogForm from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
+
   const [errorMessage, setErrorMessage] = useState(null);
   const [logged, setLogged] = useState(false);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    const fetchBlogs = async () => {
+      const allBlogs = await blogService.getAll();
+      setBlogs(allBlogs);
+    };
+    fetchBlogs();
   }, []);
 
   useEffect(() => {
@@ -27,6 +30,24 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, [logged]);
+
+  const createBlog = async (blogObject) => {
+    try {
+      const res = await blogService.addBlog(blogObject);
+      setBlogs((blog) => [...blog, res]);
+
+      setErrorMessage('Blog added successfully');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage('Blog could not be added');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -50,10 +71,51 @@ const App = () => {
     }
   };
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.clear();
     window.location.reload();
     setLogged(false);
+  };
+
+  const likeBlog = async (blog) => {
+    try {
+      blog.likes += 1;
+      await blogService.updateBlog(blog);
+
+      const allBlogs = await blogService.getAll();
+      setBlogs(allBlogs);
+
+      setErrorMessage('Blog liked successfully');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage('Could not like the blog');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  const removeBlog = async (blog) => {
+    try {
+      await blogService.removeBlog(blog);
+
+      const allBlogs = await blogService.getAll();
+      setBlogs(allBlogs);
+
+      setErrorMessage('Blog removed successfully');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage('Could not remove the blog');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
 
   if (user === null) {
@@ -82,35 +144,6 @@ const App = () => {
     );
   }
 
-  const handleCreate = async (event) => {
-    try {
-      event.preventDefault();
-      const blog = {
-        title: title,
-        author: author,
-        url: url,
-      };
-
-      const res = await blogService.addBlog(blog);
-      setBlogs((blog) => [...blog, res]);
-
-      setTitle('');
-      setAuthor('');
-      setUrl('');
-
-      setErrorMessage('Blog added successfully');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    } catch (error) {
-      console.log(error);
-      setErrorMessage('Blog could not be added');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
-  };
-
   return (
     <div>
       <Notification message={errorMessage} />
@@ -120,33 +153,11 @@ const App = () => {
 
       <div>
         <h2>create new</h2>
-        <form onSubmit={handleCreate}>
-          title:
-          <input
-            type='text'
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-          <br />
-          author:
-          <input
-            type='text'
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-          <br />
-          url:
-          <input
-            type='text'
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          />
-          <button type='submit'>create</button>
-        </form>
+        <BlogForm createBlog={createBlog} />
       </div>
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+      {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
+        <Blog key={blog.id} user={user} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog}/>
       ))}
     </div>
   );
