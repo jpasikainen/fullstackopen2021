@@ -126,6 +126,7 @@ const App = () => {
         <form onSubmit={handleLogin}>
           username:
           <input
+            id='username'
             type='text'
             value={username}
             onChange={({ target }) => setUsername(target.value)}
@@ -133,12 +134,15 @@ const App = () => {
           <br />
           password:
           <input
+            id='password'
             type='password'
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
           <br />
-          <button type='submit'>Login</button>
+          <button id='login-button' type='submit'>
+            Login
+          </button>
         </form>
       </div>
     );
@@ -155,10 +159,19 @@ const App = () => {
         <h2>create new</h2>
         <BlogForm createBlog={createBlog} />
       </div>
-
-      {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-        <Blog key={blog.id} user={user} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog}/>
-      ))}
+      <div id='all-blogs'>
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              user={user}
+              blog={blog}
+              likeBlog={likeBlog}
+              removeBlog={removeBlog}
+            />
+          ))}
+      </div>
     </div>
   );
 };

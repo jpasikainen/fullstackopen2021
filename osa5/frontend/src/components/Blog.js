@@ -25,7 +25,9 @@ const Blog = ({ user, blog, likeBlog, removeBlog }) => {
   if (!show)
     return (
       <div style={blogStyle}>
-        {blog.title}
+        <span>
+          {blog.title} {blog.author}
+        </span>
         <button onClick={showBlog}>View</button>
       </div>
     );
@@ -33,12 +35,18 @@ const Blog = ({ user, blog, likeBlog, removeBlog }) => {
     return (
       <div style={blogStyle}>
         <button onClick={showBlog}>Hide</button>
-        <p>{blog.title} {blog.author}</p>
+        <p>
+          {blog.title} {blog.author}
+        </p>
         <p>{blog.url}</p>
-        <span>likes {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button></span>
+        <span>
+          likes {blog.likes}{' '}
+          <button onClick={() => likeBlog(blog)}>Like</button>
+        </span>
         <p>{blog.user.name}</p>
-        {user.name === blog.user.name &&
-        <button onClick={() => confirmBlogRemoval(blog)}>Remove</button>}
+        {user.name === blog.user.name && (
+          <button onClick={() => confirmBlogRemoval(blog)}>Remove</button>
+        )}
       </div>
     );
 };

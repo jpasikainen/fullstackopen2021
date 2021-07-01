@@ -24,7 +24,6 @@ const BlogForm = ({ createBlog }) => {
     setVisibility(!visible);
   };
 
-
   if (!visible)
     return (
       <div>
@@ -35,27 +34,32 @@ const BlogForm = ({ createBlog }) => {
     return (
       <div>
         <form onSubmit={addBlog}>
-        title:
+          title:
           <input
+            id='title'
             type='text'
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
           <br />
-        author:
+          author:
           <input
+            id='author'
             type='text'
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
           <br />
-        url:
+          url:
           <input
+            id='url'
             type='text'
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
-          <button type='submit'>create</button>
+          <button id='blog-button' type='submit'>
+            create
+          </button>
         </form>
         <button onClick={toggleVisibility}>Hide</button>
       </div>
